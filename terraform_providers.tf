@@ -1,6 +1,6 @@
 provider "google" {
-  # credentials = "${file("account.json")}"
-  project     = "or2-msq-epm-gcp-pl-dev-t1iylu"
+  credentials = file("../epm-gcp-pl.json")
+  project     = var.project_id
   region      = var.region
-  zone        = var.zone
+  zone        = var.zones[0]
 }

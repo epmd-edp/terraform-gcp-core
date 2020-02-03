@@ -1,30 +1,72 @@
-resource "google_container_cluster" "primary" {
-  name               = var.platform_name
-  location           = var.zone
-  initial_node_count = 3
+locals {
+  network_name           = "${var.project_id}-network"
+  subnet_name            = "${var.project_id}-subnet"
+  master_auth_subnetwork = "${var.project_id}-master-subnet"
+  pods_range_name        = "ip-range-pods"
+  svc_range_name         = "ip-range-svc"
+}
 
-  master_auth {
-    username = ""
-    password = ""
+module "gke" {
+  source                     = "terraform-google-modules/kubernetes-engine/google"
+  project_id                 = var.project_id
+  name                       = var.platform_name
+  region                     = var.region
+  regional                   = false
+  zones                      = var.zones
+  network                    = module.gcp-network.network_name
+  subnetwork                 = module.gcp-network.subnets_names[index(module.gcp-network.subnets_names, local.subnet_name)]
+  ip_range_pods              = local.pods_range_name
+  ip_range_services          = local.svc_range_name
+  http_load_balancing        = true
+  horizontal_pod_autoscaling = false
+  network_policy             = false
+  remove_default_node_pool   = true
 
-    client_certificate_config {
-      issue_client_certificate = false
-    }
-  }
+  node_pools = [
+    {
+      name               = "default-node-pool"
+      machine_type       = "n1-standard-1"
+      autoscaling        = false
+      local_ssd_count    = 0
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      image_type         = "COS"
+      auto_repair        = true
+      auto_upgrade       = true
+      preemptible        = true
+      node_count         = 3
+    },
+  ]
 
-  node_config {
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
+  node_pools_oauth_scopes = {
+    all = []
+
+    default-node-pool = [
+      "https://www.googleapis.com/auth/cloud-platform",
     ]
+  }
 
-    metadata = {
-      disable-legacy-endpoints = "true"
+  node_pools_labels = {
+    all = {}
+
+    default-node-pool = {
+      default-node-pool = true
     }
   }
 
-  timeouts {
-    create = "30m"
-    update = "40m"
+  node_pools_metadata = {
+    all = {}
+
+    default-node-pool = {
+      node-pool-metadata-custom-value = "my-node-pool"
+    }
+  }
+
+  node_pools_tags = {
+    all = []
+
+    default-node-pool = [
+      "default-node-pool",
+    ]
   }
 }
