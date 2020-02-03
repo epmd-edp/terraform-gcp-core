@@ -7,7 +7,7 @@ locals {
 }
 
 module "gke" {
-  source                     = "terraform-google-modules/kubernetes-engine/google"
+  source                     = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
   project_id                 = var.project_id
   name                       = var.platform_name
   region                     = var.region
@@ -21,6 +21,17 @@ module "gke" {
   horizontal_pod_autoscaling = false
   network_policy             = false
   remove_default_node_pool   = true
+  enable_private_endpoint    = false
+  enable_private_nodes       = true
+  master_ipv4_cidr_block     = "172.16.0.0/28"
+
+  master_authorized_networks = [
+    # {
+    #   cidr_block   = data.google_compute_subnetwork.subnetwork.ip_cidr_range
+    #   display_name = "VPC"
+    # },
+  ]
+
 
   node_pools = [
     {
