@@ -1,0 +1,7 @@
+Code-Review+2: Alexander Morozov <alexander_morozov@epam.com>
+Verified+1: Alexander Morozov <alexander_morozov@epam.com>
+Submitted-by: Alexander Morozov <alexander_morozov@epam.com>
+Submitted-at: Wed, 05 Feb 2020 12:58:18 +0000
+Reviewed-on: https://gerrit-oc-green-edp-cicd.delivery.aws.main.edp.projects.epam.com/c/terraform-gcp-core/+/153
+Project: terraform-gcp-core
+Branch: refs/heads/master
