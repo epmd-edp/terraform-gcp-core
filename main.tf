@@ -1,7 +1,9 @@
 locals {
-  network_name           = "${var.project_id}-network"
-  subnet_name            = "${var.project_id}-subnet"
-  master_auth_subnetwork = "${var.project_id}-master-subnet"
+  network_name           = "${var.platform_name}-network"
+  subnet_name            = "${var.platform_name}-subnet"
+  master_auth_subnetwork = "${var.platform_name}-master-subnet"
+  router_name            = "${var.platform_name}-router"
+  cloud_nat_name         = "${var.platform_name}-nat"
   pods_range_name        = "ip-range-pods"
   svc_range_name         = "ip-range-svc"
 }
@@ -17,8 +19,10 @@ module "gke" {
   subnetwork                 = module.gcp-network.subnets_names[index(module.gcp-network.subnets_names, local.subnet_name)]
   ip_range_pods              = local.pods_range_name
   ip_range_services          = local.svc_range_name
+  kubernetes_version         = "1.15.7-gke.23"
   http_load_balancing        = true
   horizontal_pod_autoscaling = false
+  # TODO var
   network_policy             = false
   remove_default_node_pool   = true
   enable_private_endpoint    = false
@@ -35,7 +39,8 @@ module "gke" {
 
   node_pools = [
     {
-      name               = "default-node-pool"
+      name               = "${var.platform_name}-node-pool"
+      # TODO var
       machine_type       = "n1-standard-1"
       autoscaling        = false
       local_ssd_count    = 0
@@ -44,8 +49,10 @@ module "gke" {
       image_type         = "COS"
       auto_repair        = true
       auto_upgrade       = true
+      # TODO change
       preemptible        = true
-      node_count         = 2
+      # TODO var
+      node_count         = 1
     },
   ]
 
@@ -75,9 +82,5 @@ module "gke" {
 
   node_pools_tags = {
     all = []
-
-    default-node-pool = [
-      "default-node-pool",
-    ]
   }
 }

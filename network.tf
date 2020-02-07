@@ -32,3 +32,12 @@ module "gcp-network" {
     ]
   }
 }
+
+module "cloud-nat" {
+  create_router   = true
+  source          = "terraform-google-modules/cloud-nat/google"
+  project_id      = "${var.project_id}"
+  region          = "${var.region}"
+  router          = "${local.router_name}"
+  network         = module.gcp-network.network_name
+}
