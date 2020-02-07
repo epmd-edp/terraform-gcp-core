@@ -19,7 +19,7 @@ module "gke" {
   subnetwork                 = module.gcp-network.subnets_names[index(module.gcp-network.subnets_names, local.subnet_name)]
   ip_range_pods              = local.pods_range_name
   ip_range_services          = local.svc_range_name
-  kubernetes_version         = "1.15.7-gke.23"
+  kubernetes_version         = "1.15.8-gke.2"
   http_load_balancing        = true
   horizontal_pod_autoscaling = false
   # TODO var
@@ -57,10 +57,9 @@ module "gke" {
   ]
 
   node_pools_oauth_scopes = {
-    all = []
-
-    default-node-pool = [
-      "https://www.googleapis.com/auth/cloud-platform",
+    all = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
     ]
   }
 
