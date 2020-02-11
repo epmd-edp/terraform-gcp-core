@@ -10,7 +10,7 @@ module "gke" {
   ip_range_pods              = local.pods_range_name
   ip_range_services          = local.svc_range_name
   kubernetes_version         = "1.15.8-gke.2"
-  http_load_balancing        = true
+  http_load_balancing        = false
   horizontal_pod_autoscaling = false
   # TODO var
   network_policy             = false
