@@ -1,2 +1,4 @@
-platform_name = "edp-cluster"
-project_id     = "or2-msq-epm-gcp-pl-dev-t1iylu"
+# platform_name = ""
+# project_id     = ""
+# certificate_path = ""
+# private_key_path = ""

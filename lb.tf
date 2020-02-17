@@ -1,13 +1,20 @@
 resource "google_compute_global_forwarding_rule" "frontend" {
   name       = "${var.platform_name}-frontend"
-  target     = google_compute_target_http_proxy.load_balancer.self_link
-  port_range = "80"
+  target     = google_compute_target_https_proxy.load_balancer.self_link
+  port_range = "443"
   ip_address = module.address.addresses[0]
 }
 
-resource "google_compute_target_http_proxy" "load_balancer" {
-  name        = "${var.platform_name}-load-balancer"
-  url_map     = google_compute_url_map.url_map.self_link
+resource "google_compute_target_https_proxy" "load_balancer" {
+  name             = "${var.platform_name}-https-proxy"
+  url_map          = google_compute_url_map.url_map.self_link
+  ssl_certificates = [google_compute_ssl_certificate.wild_cert.self_link]
+}
+
+resource "google_compute_ssl_certificate" "wild_cert" {
+  name        = "${var.platform_name}-certificate"
+  private_key = file("${var.private_key_path}")
+  certificate = file("${var.certificate_path}")
 }
 
 resource "google_compute_url_map" "url_map" {
@@ -17,10 +24,8 @@ resource "google_compute_url_map" "url_map" {
 
 resource "google_compute_health_check" "tcp-health-check" {
   name = "${var.platform_name}-health-check"
-
   timeout_sec        = 5
   check_interval_sec = 5
-
   tcp_health_check {
     port = "32767"
   }

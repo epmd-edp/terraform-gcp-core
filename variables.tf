@@ -24,3 +24,13 @@ variable "domain" {
   description = "Zone domain."
   default     = "edp.epam.com."
 }
+
+variable "private_key_path" {
+  description = "Path to the private key file"
+  type        = string
+}
+
+variable "certificate_path" {
+  description = "Path to the public key certificate file"
+  type        = string
+}
