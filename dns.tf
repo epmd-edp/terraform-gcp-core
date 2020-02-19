@@ -1,12 +1,13 @@
 # Requires roles/dns.admin
 module "dns-public-zone" {
-  source      = "terraform-google-modules/cloud-dns/google"
-  project_id  = var.project_id
-  type        = "public"
-  name        = "${var.platform_name}-zone"
-  domain      = var.domain
+  source                             = "terraform-google-modules/cloud-dns/google"
+  project_id                         = var.project_id
+  type                               = var.is_public ? "public" : "private"
+  name                               = "${var.platform_name}-zone"
+  domain                             = var.domain
+  private_visibility_config_networks = ["${module.gcp-network.network_self_link}"]
 
-  recordsets  = [
+  recordsets = [
     {
       name    = "*"
       type    = "A"
@@ -14,9 +15,9 @@ module "dns-public-zone" {
       records = module.address.addresses
     },
     {
-      name    = ""
-      type    = "NS"
-      ttl     = 21600
+      name = ""
+      type = "NS"
+      ttl  = 21600
       records = [
         "ns-cloud-c1.googledomains.com.",
         "ns-cloud-c2.googledomains.com.",
@@ -25,9 +26,9 @@ module "dns-public-zone" {
       ]
     },
     {
-      name    = ""
-      type    = "TXT"
-      ttl     = 300
+      name = ""
+      type = "TXT"
+      ttl  = 300
       records = [
         "\"v=spf1 -all\"",
       ]

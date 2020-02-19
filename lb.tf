@@ -23,7 +23,7 @@ resource "google_compute_url_map" "url_map" {
 }
 
 resource "google_compute_health_check" "tcp-health-check" {
-  name = "${var.platform_name}-health-check"
+  name               = "${var.platform_name}-health-check"
   timeout_sec        = 5
   check_interval_sec = 5
   tcp_health_check {
@@ -37,7 +37,7 @@ resource "google_compute_backend_service" "lb-backend" {
   health_checks = [google_compute_health_check.tcp-health-check.self_link]
   backend {
     # TODO define it
-    group                   = google_container_cluster.primary.instance_group_urls[0]
+    group = google_container_cluster.primary.instance_group_urls[0]
   }
 
 }
