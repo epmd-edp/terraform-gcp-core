@@ -6,15 +6,15 @@ module "gcp-network" {
 
   subnets = [
     {
-      subnet_name   = local.subnet_name
-      subnet_ip     = "10.0.0.0/17"
-      subnet_region = var.region
+      subnet_name           = local.subnet_name
+      subnet_ip             = "10.0.0.0/17"
+      subnet_region         = var.region
       subnet_private_access = "true"
     },
     {
-      subnet_name   = local.master_auth_subnetwork
-      subnet_ip     = "10.60.0.0/17"
-      subnet_region = var.region
+      subnet_name           = local.master_auth_subnetwork
+      subnet_ip             = "10.60.0.0/17"
+      subnet_region         = var.region
       subnet_private_access = "true"
     },
   ]
@@ -34,32 +34,33 @@ module "gcp-network" {
 }
 
 module "cloud-nat" {
-  create_router   = true
-  source          = "terraform-google-modules/cloud-nat/google"
-  project_id      = "${var.project_id}"
-  region          = "${var.region}"
-  router          = "${local.router_name}"
-  network         = module.gcp-network.network_name
+  create_router = true
+  source        = "terraform-google-modules/cloud-nat/google"
+  project_id    = "${var.project_id}"
+  region        = "${var.region}"
+  router        = "${local.router_name}"
+  network       = module.gcp-network.network_name
 }
 
 # Requires roles/compute.securityAdmin
 resource "google_compute_firewall" "iap" {
-  name    = "iap-allow"
-  network = module.gcp-network.network_name
+  name          = "iap-allow"
+  network       = module.gcp-network.network_name
   source_ranges = ["35.235.240.0/20"]
   allow {
-    protocol      = "tcp"
-    ports         = ["22"]
+    protocol = "tcp"
+    ports    = ["22"]
   }
 }
 
 resource "google_compute_firewall" "health-check" {
   name    = "health-check-allow"
   network = module.gcp-network.network_name
-  source_ranges = ["35.191.0.0/16",
-                   "130.211.0.0/22"
+  source_ranges = [
+    "35.191.0.0/16",
+    "130.211.0.0/22"
   ]
   allow {
-    protocol      = "tcp"
+    protocol = "tcp"
   }
 }

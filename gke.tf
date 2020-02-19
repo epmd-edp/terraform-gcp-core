@@ -1,11 +1,12 @@
 resource "google_container_cluster" "primary" {
-  name                  = var.platform_name
-  location              = var.zones[0]
-  initial_node_count    = 1
-  network               = module.gcp-network.network_name
-  subnetwork            = module.gcp-network.subnets_names[index(module.gcp-network.subnets_names, local.subnet_name)]
-  min_master_version        = "1.15.8-gke.3"
-  # TODO discuss more parameters
+  name     = var.platform_name
+  location = var.zone
+  # TODO Change before merge to 4
+  initial_node_count = 1
+  network            = module.gcp-network.network_name
+  subnetwork         = module.gcp-network.subnets_names[index(module.gcp-network.subnets_names, local.subnet_name)]
+  min_master_version = var.kubernetes_version
+  resource_labels    = { "project" : "${var.platform_name}" }
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false
@@ -20,7 +21,6 @@ resource "google_container_cluster" "primary" {
       disabled = true
     }
   }
-
   master_auth {
     username = ""
     password = ""
@@ -31,12 +31,13 @@ resource "google_container_cluster" "primary" {
   }
 
   node_config {
-    preemptible  = false
+    # TODO Change before merge
+    preemptible  = true
+    machine_type = "custom-2-10240"
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
     ]
-
     metadata = {
       disable-legacy-endpoints = "true"
     }
@@ -45,5 +46,27 @@ resource "google_container_cluster" "primary" {
   timeouts {
     create = "30m"
     update = "40m"
+  }
+}
+
+resource "google_container_node_pool" "workload_node_pool" {
+  name     = "workload-node-pool"
+  location = var.zone
+  cluster  = google_container_cluster.primary.name
+  autoscaling {
+    min_node_count = var.min_node_count
+    max_node_count = var.max_node_count
+  }
+
+  node_config {
+    preemptible  = var.is_preemptible
+    machine_type = var.machine_type
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
   }
 }
