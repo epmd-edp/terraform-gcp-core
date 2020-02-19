@@ -4,10 +4,10 @@ variable "region" {
   default     = "us-central1"
 }
 
-variable "zones" {
+variable "zone" {
   description = "The GCP zone to deploy the cluster into (e.g. us-central1-a)"
-  type        = list(string)
-  default     = ["us-central1-a"]
+  type        = string
+  default     = "us-central1-a"
 }
 
 variable "platform_name" {
@@ -34,3 +34,34 @@ variable "certificate_path" {
   description = "Path to the public key certificate file"
   type        = string
 }
+
+variable "kubernetes_version" {
+  description = "The minimum version of the master GKE"
+  type        = string
+  default     = "1.15.8-gke.3"
+}
+
+variable "min_node_count" {
+  description = "The minimum number of nodes in the workload node pool"
+  type        = number
+  default     = 1
+}
+
+variable "max_node_count" {
+  description = "The maximum number of nodes in the workload node pool"
+  type        = number
+  default     = 1
+}
+
+variable "is_preemptible" {
+  description = "Are nodes preemptible or not in the workload node pool"
+  type        = bool
+  default     = true
+}
+
+variable "machine_type" {
+  description = "The type of nodes in the workload node pool"
+  type        = string
+  default     = "n1-standard-1"
+}
+

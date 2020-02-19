@@ -2,6 +2,7 @@
 module "dns-public-zone" {
   source      = "terraform-google-modules/cloud-dns/google"
   project_id  = var.project_id
+  # TODO VAR
   type        = "public"
   name        = "${var.platform_name}-zone"
   domain      = var.domain
