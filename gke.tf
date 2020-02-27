@@ -53,6 +53,7 @@ resource "google_container_node_pool" "workload_node_pool" {
   name     = "workload-node-pool"
   location = var.zone
   cluster  = google_container_cluster.primary.name
+  node_count = var.min_node_count
   autoscaling {
     min_node_count = var.min_node_count
     max_node_count = var.max_node_count
