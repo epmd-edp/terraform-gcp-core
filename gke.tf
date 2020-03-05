@@ -50,9 +50,9 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "workload_node_pool" {
-  name     = "workload-node-pool"
-  location = var.zone
-  cluster  = google_container_cluster.primary.name
+  name       = "workload-node-pool"
+  location   = var.zone
+  cluster    = google_container_cluster.primary.name
   node_count = var.min_node_count
   autoscaling {
     min_node_count = var.min_node_count
